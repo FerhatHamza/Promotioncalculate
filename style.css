@@ -1,0 +1,65 @@
+:root{
+  --bg:#f7fbff;
+  --card:#ffffff;
+  --accent:#1167b1;
+  --muted:#666;
+}
+*{box-sizing:border-box}
+body{
+  font-family: "Segoe UI", Tahoma, Arial, "Noto Naskh Arabic", sans-serif;
+  background:var(--bg);
+  color:#111;
+  direction:rtl;
+  padding:28px;
+}
+main{
+  max-width:820px;
+  margin:12px auto;
+  background:var(--card);
+  padding:22px;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(10,20,40,0.08);
+}
+h1{color:var(--accent); margin:0 0 14px}
+label{display:block; margin:10px 0 6px; font-weight:600}
+input[type="number"]{
+  width:140px;
+  padding:8px 10px;
+  font-size:16px;
+  border:1px solid #d8e6f6;
+  border-radius:6px;
+  margin-left:10px;
+}
+.controls{margin-top:14px}
+button{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:600;
+  margin-left:8px;
+}
+button[aria-pressed="true"]{opacity:0.9}
+#result{
+  margin-top:18px;
+  padding:14px;
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#f3fbff);
+  border:1px solid #e0eefc;
+}
+.result-row{display:flex; justify-content:space-between; gap:12px; padding:6px 0}
+.small{color:var(--muted); font-size:0.95rem}
+.table{
+  margin-top:12px;
+  border-collapse:collapse;
+  width:100%;
+}
+.table th, .table td{
+  text-align:center;
+  padding:8px;
+  border:1px solid #e9f2fb;
+}
+.important{font-weight:700; color:#0b66a3}
+.note{margin-top:10px; color:var(--muted)}
