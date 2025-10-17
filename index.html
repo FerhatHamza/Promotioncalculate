@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>حاسبة الترقية 4-4-2</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>حاسبة الترقية (قاعدة 4 - 4 - 2)</h1>
+
+    <label for="count">عدد الموظفين في نفس السلك/الرتبة:</label>
+    <input id="count" type="number" min="1" value="4" />
+
+    <div class="controls">
+      <button id="calcBtn">احسب</button>
+      <button id="exampleBtn">مثال (4 موظفين)</button>
+    </div>
+
+    <section id="result" aria-live="polite"></section>
+
+    <details>
+      <summary>ملاحظات قانونية وحسابية</summary>
+      <ul>
+        <li>النسب المستخدمة: المدة الدنيا 40% — المدة المتوسطة 40% — المدة القصوى 20%.</li>
+        <li>تُحتسب أولاً الأعداد الصحيحة ثم توزع المقاعد المتبقية وفق أكبر القيم العشرية. عند تساوي القيم العشرية تُعطى الأولوية للـ <strong>المدة الدنيا</strong> ثم <strong>المدة المتوسطة</strong> ثم <strong>المدة القصوى</strong>.</li>
+        <li>لحساب الأقدمية المعتمدة لسنة معينة، يتم إيقاف الأقدمية إلى 31 ديسمبر من السنة السابقة (مثلاً للترقية سنة 2022 تُحتسب حتى 31/12/2021).</li>
+      </ul>
+    </details>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
