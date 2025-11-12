@@ -1,0 +1,142 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f9;
+}
+
+header {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#searchInput {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex-grow: 1;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.table-container {
+    max-height: 80vh; /* Limit height for scrollability */
+    overflow: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#gradeMatrix {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+/* Table Headers Styling */
+#gradeMatrix th {
+    background-color: #3f51b5;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #3f51b5;
+    z-index: 10; /* Ensures headers are above scrolling content */
+}
+
+/* Sticky Headers (Top) */
+#gradeMatrix thead th {
+    position: sticky;
+    top: 0;
+}
+#gradeMatrix thead tr:nth-child(2) th {
+    top: 45px; /* Adjust for the height of the first header row */
+}
+
+
+/* Table Body Styling */
+#gradeMatrix td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+/* Alternating Row Colors */
+#gradeMatrix tbody tr:nth-child(even) {
+    background-color: #f0f0f5;
+}
+
+#gradeMatrix tbody tr:hover:not(.hidden) {
+    background-color: #c5cae9; /* Light highlight on hover */
+}
+
+/* Group Header Styling */
+.group-header {
+    font-weight: bold;
+    color: #3f51b5;
+    background-color: #e8eaf6 !important;
+}
+
+.extra-cat-header {
+    background-color: #ffcc80 !important;
+    color: #e65100;
+}
+
+/* Sticky First Column (Group) */
+.sticky-col-1 {
+    position: sticky;
+    left: 0;
+    z-index: 5; /* Lower than top headers */
+}
+/* Sticky Second Column (Category) */
+.sticky-col-2 {
+    position: sticky;
+    left: 60px; /* Adjust based on the width of the first column */
+    background-color: white; /* Ensure it covers the data underneath */
+    z-index: 4;
+}
+
+/* Adjusting Sticky Column Backgrounds for Row Stripes and Group Headers */
+.sticky-col-1, .sticky-col-2 {
+    background-color: white; /* Default background */
+}
+#gradeMatrix tbody tr:nth-child(even) .sticky-col-1, 
+#gradeMatrix tbody tr:nth-child(even) .sticky-col-2 {
+    background-color: #f0f0f5; /* Match even row stripe */
+}
+.group-header.sticky-col-1 {
+     background-color: #e8eaf6 !important; /* Match Group Header background */
+}
+.extra-cat-header.sticky-col-1 {
+    background-color: #ffcc80 !important;
+}
+
+/* Highlighted row for search */
+.highlighted {
+    background-color: #ffeb3b !important; /* Bright yellow highlight */
+    font-weight: bold;
+}
+
+/* Hidden row for filtering */
+.hidden {
+    display: none;
+}
