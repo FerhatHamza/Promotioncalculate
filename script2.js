@@ -1,15 +1,22 @@
 /**
  * Filters the table rows based on the text entered in the search input field.
  * It hides rows that do not match the search criteria.
+ * MODIFIED: The search is now EXACT, requiring the input to match the cell content.
  */
 function filterTable() {
-    // Get the search input value and convert to lowercase for case-insensitive search
+    // Get the search input value and convert to lowercase and trim for case-insensitive exact search
     let input = document.getElementById('searchInput');
     let filter = input.value.toLowerCase().trim();
     
     // Get the table and all its body rows
     let table = document.getElementById('gradeMatrix');
     let trs = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    // If the filter is empty, show all rows and exit
+    if (filter === "") {
+        clearFilter();
+        return;
+    }
 
     // Iterate through all table rows
     for (let i = 0; i < trs.length; i++) {
@@ -19,26 +26,13 @@ function filterTable() {
 
         let rowMatch = false;
         
-        // Check the text content of all cells in the current row
-        // We look at the Group (index 0), Category (index 1), and Minimale Index (index 2)
-        // and any of the scale indices for a match.
-        
         let cells = row.getElementsByTagName('td');
         for (let j = 0; j < cells.length; j++) {
-            let cellText = cells[j].textContent || cells[j].innerText;
-            // Check if the cell has a rowspan, meaning the content belongs to the row above
-            if (cells[j].getAttribute('rowspan')) {
-                // If it's a rowspan cell, we only check it for the first row of its group
-                // In our HTML structure, Group (col 1) and Hors Catégorie (col 1) are rowspan.
-                if (j === 0) { // Group column check
-                    let groupName = cellText.toLowerCase();
-                    if (groupName.includes(filter)) {
-                        rowMatch = true;
-                        break;
-                    }
-                }
-                // We'll skip other rowspan cells in subsequent rows since they are empty for the purpose of the table structure here.
-            } else if (cellText.toLowerCase().includes(filter)) {
+            // Get cell text, convert to lowercase, and trim for exact comparison
+            let cellText = (cells[j].textContent || cells[j].innerText).toLowerCase().trim();
+            
+            // Check for EXACT match (strict equality '===')
+            if (cellText === filter) {
                 rowMatch = true;
                 break;
             }
@@ -57,12 +51,10 @@ function filterTable() {
         }
 
         // Handle rows with Group rowspan (i.e., the Group column is only in the first row)
-        // Check if the Group cell is present (not skipped by rowspan) and if the group name matches.
         let groupCell = row.getElementsByClassName('sticky-col-1')[0];
         if (groupCell && groupCell.getAttribute('rowspan')) {
-            // This is the *first* row of a group. We check if any subsequent row in the group matches.
             let rowspan = parseInt(groupCell.getAttribute('rowspan')) || 1;
-            let groupVisible = rowMatch; // Assume the first row's group is visible if it matches
+            let groupVisible = rowMatch; 
             
             // Check subsequent rows in the same group
             for (let k = 1; k < rowspan; k++) {
@@ -72,8 +64,10 @@ function filterTable() {
                     let nextRowMatch = false;
 
                     for (let l = 0; l < nextRowCells.length; l++) {
-                        let cellText = nextRowCells[l].textContent || nextRowCells[l].innerText;
-                        if (cellText.toLowerCase().includes(filter)) {
+                        // Get cell text, convert to lowercase, and trim for exact comparison
+                        let cellText = (nextRowCells[l].textContent || nextRowCells[l].innerText).toLowerCase().trim();
+                        
+                        if (cellText === filter) {
                             nextRowMatch = true;
                             break;
                         }
@@ -98,9 +92,6 @@ function filterTable() {
             // Skip the inner loop index since we handled the whole group
             i += (rowspan - 1);
         } else if (groupCell && !groupCell.getAttribute('rowspan')) {
-            // This is a row that does not contain the group label (it's part of a group rowspan)
-            // It will be handled in the logic above when the first row of its group is processed.
-            // Remove the temporary attribute
              row.removeAttribute('data-hidden-by-filter');
         }
     }
