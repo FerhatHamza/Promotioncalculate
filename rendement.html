@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة المردودية - نظام الرواتب الجزائري</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        dzGreen: '#006633',
+                        dzRed: '#D21034',
+                        primary: '#1167b1',
+                        secondary: '#f3f4f6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 py-6 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-primary mb-2">حاسبة منحة المردودية (PRI)</h1>
+            <p class="text-slate-500 text-sm md:text-base">
+                وفقاً للمرسوم الرئاسي 304-07 والمرسوم التنفيذي 19-165 (الشبكة الاستدلالية 2024)
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8">
+        
+        <section class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 md:p-8 mb-8">
+            <h2 class="text-lg font-bold text-slate-700 mb-6 flex items-center gap-2">
+                <span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
+                بيانات الموظف
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="gradeSelect" class="block text-sm font-medium text-slate-600 mb-2">الصنف / الرتبة</label>
+                    <select id="gradeSelect" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                        </select>
+                </div>
+
+                <div>
+                    <label for="degreeSelect" class="block text-sm font-medium text-slate-600 mb-2">الدرجة (Echelon)</label>
+                    <select id="degreeSelect" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                        <option value="0">0 (جديد)</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="rateInput" class="block text-sm font-medium text-slate-600 mb-2">نسبة التنقيط (%)</label>
+                    <div class="relative">
+                        <input type="number" id="rateInput" value="30" min="0" max="40" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 pl-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition font-bold text-primary">
+                        <span class="absolute left-4 top-3 text-slate-400 font-bold">%</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">عادة بين 0% و 40%</p>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <button id="calcBtn" class="bg-primary hover:bg-sky-700 text-white font-bold py-3 px-12 rounded-lg shadow-md transform active:scale-95 transition duration-200 flex items-center gap-2 text-lg">
+                    <span>احسب المردودية</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="resultSection" class="hidden animate-fade-in-up">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-5 rounded-xl shadow border-r-4 border-slate-400">
+                    <h3 class="text-slate-500 text-sm font-bold mb-1">الأجر الرئيسي (الخاضع للنسبة)</h3>
+                    <div class="text-2xl font-bold text-slate-800" id="displayBaseSalary">0.00 دج</div>
+                    <div class="text-xs text-slate-400 mt-1">مجموع النقاط الاستدلالية × 45 دج</div>
+                </div>
+                
+                <div class="bg-primary text-white p-5 rounded-xl shadow-lg border-r-4 border-sky-400 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                    <h3 class="text-sky-100 text-sm font-bold mb-1">المردودية الصافية (3 أشهر)</h3>
+                    <div class="text-3xl font-extrabold" id="displayNetQuarterly">0.00 دج</div>
+                    <div class="text-sky-200 text-xs mt-1">المبلغ الذي يدخل الحساب البريدي</div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-100">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700">تفاصيل الحساب</h3>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded border border-green-200" id="detailRateDisplay">نسبة 30%</span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="px-6 py-3">البيان</th>
+                                <th class="px-6 py-3">القيمة / المعادلة</th>
+                                <th class="px-6 py-3">المبلغ (دج)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-medium text-slate-700">الرقم الاستدلالي (الصنف)</td>
+                                <td class="px-6 py-3 text-slate-500" id="lblBaseIndex">-</td>
+                                <td class="px-6 py-3 font-mono text-slate-600">-</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-medium text-slate-700">الرقم الاستدلالي (الدرجة)</td>
+                                <td class="px-6 py-3 text-slate-500" id="lblDegreeIndex">-</td>
+                                <td class="px-6 py-3 font-mono text-slate-600">-</td>
+                            </tr>
+                            <tr class="bg-blue-50/50">
+                                <td class="px-6 py-3 font-bold text-primary">المجموع الاستدلالي</td>
+                                <td class="px-6 py-3 text-primary" id="lblTotalIndex">-</td>
+                                <td class="px-6 py-3 font-mono font-bold text-primary" id="lblReferenceSalary">-</td>
+                            </tr>
+                            
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-medium text-slate-700">المردودية الخام (الشهرية)</td>
+                                <td class="px-6 py-3 text-slate-500" id="lblRawFormula">الأجر الرئيسي × %</td>
+                                <td class="px-6 py-3 font-mono font-bold text-slate-800" id="valGrossMonthly">-</td>
+                            </tr>
+                            
+                            <tr class="text-red-600 bg-red-50/30">
+                                <td class="px-6 py-3 font-medium">الضمان الاجتماعي (9%)</td>
+                                <td class="px-6 py-3 text-red-400 text-xs">اقتطاع</td>
+                                <td class="px-6 py-3 font-mono" id="valSS">-</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-3 font-medium text-slate-700">الخاضع للضريبة</td>
+                                <td class="px-6 py-3 text-slate-500">الخام - الضمان</td>
+                                <td class="px-6 py-3 font-mono text-slate-800" id="valTaxable">-</td>
+                            </tr>
+                            <tr class="text-red-600 bg-red-50/30">
+                                <td class="px-6 py-3 font-medium">الضريبة على الدخل (10%)</td>
+                                <td class="px-6 py-3 text-red-400 text-xs">اقتطاع</td>
+                                <td class="px-6 py-3 font-mono" id="valIRG">-</td>
+                            </tr>
+
+                            <tr class="bg-green-50 border-t-2 border-green-100">
+                                <td class="px-6 py-4 font-bold text-green-800">الصافي الشهري</td>
+                                <td class="px-6 py-4 text-green-600 text-xs">شهر واحد</td>
+                                <td class="px-6 py-4 font-mono font-bold text-green-700 text-lg" id="valNetMonthly">-</td>
+                            </tr>
+                            <tr class="bg-primary text-white">
+                                <td class="px-6 py-4 font-bold">الصافي الثلاثي (للدفع)</td>
+                                <td class="px-6 py-4 text-sky-200 text-xs">3 أشهر</td>
+                                <td class="px-6 py-4 font-mono font-bold text-xl" id="valNetQuarterly">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800 flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p>
+                    <strong>ملاحظة:</strong> يتم حساب اقتطاع الضريبة على الدخل (IRG) في هذا التطبيق بنسبة ثابتة 10% وفقاً للإجراءات المعمول بها للمنح المنفصلة (أو حسب طلبك). قد تختلف الحسابات قليلاً إذا تم دمج المردودية مع الراتب الشهري في كشف واحد.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm">
+                تطوير <strong class="text-primary">Ferhat Hamza</strong> © 2025
+            </p>
+            <p class="text-slate-400 text-xs mt-1">تطبيق مساعد لأغراض إدارية - القيم تقريبية للأعداد العشرية</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
