@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة تعويض المناوبة - قطاع الصحة</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style4.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        dzGreen: '#006633',
+                        dzRed: '#D21034',
+                        primary: '#0891b2', /* Cyan-600 */
+                        primaryDark: '#0e7490',
+                        secondary: '#f3f4f6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto px-4 py-4 md:py-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">تعويض المناوبة (Garde)</h1>
+                <p class="text-slate-500 text-xs md:text-sm mt-1">
+                    طبقا للمرسوم التنفيذي رقم 13-195
+                </p>
+            </div>
+            <div class="hidden md:block">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">صحة عمومية</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8">
+        
+        <section class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 md:p-8 mb-8">
+            
+            <div class="mb-8">
+                <label for="roleSelect" class="block text-sm font-bold text-slate-700 mb-2">
+                    <span class="text-primary ml-1">1.</span> صفة الموظف / الرتبة
+                </label>
+                <select id="roleSelect" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-slate-700">
+                    </select>
+                <p class="text-xs text-slate-400 mt-2" id="roleDescription">اختر الرتبة لتحديد تسعيرة المناوبة</p>
+            </div>
+
+            <div id="shiftInputs" class="transition-all duration-300">
+                <h3 class="block text-sm font-bold text-slate-700 mb-4">
+                    <span class="text-primary ml-1">2.</span> عدد المناوبات المنجزة
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 relative group hover:border-primary/50 transition">
+                        <label class="block text-xs font-bold text-slate-500 mb-2">أيام العمل (Semaine)</label>
+                        <div class="flex items-center">
+                            <input type="number" id="wdInput" min="0" max="10" value="0" class="w-full bg-transparent font-bold text-2xl text-slate-800 focus:outline-none text-center">
+                        </div>
+                        <div class="text-center text-xs text-primary font-mono mt-1 price-tag" id="priceWD">0 دج</div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 relative group hover:border-indigo-400 transition">
+                        <label class="block text-xs font-bold text-slate-500 mb-2">الجمعة والسبت (Week-end)</label>
+                        <div class="flex items-center">
+                            <input type="number" id="weInput" min="0" max="10" value="0" class="w-full bg-transparent font-bold text-2xl text-indigo-700 focus:outline-none text-center">
+                        </div>
+                        <div class="text-center text-xs text-indigo-500 font-mono mt-1 price-tag" id="priceWE">0 دج</div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 relative group hover:border-rose-400 transition">
+                        <label class="block text-xs font-bold text-slate-500 mb-2">أعياد (Jours Fériés)</label>
+                        <div class="flex items-center">
+                            <input type="number" id="holInput" min="0" max="10" value="0" class="w-full bg-transparent font-bold text-2xl text-rose-600 focus:outline-none text-center">
+                        </div>
+                        <div class="text-center text-xs text-rose-500 font-mono mt-1 price-tag" id="priceHol">0 دج</div>
+                    </div>
+                </div>
+
+                <div id="limitWarning" class="hidden mt-4 bg-orange-50 text-orange-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2 border border-orange-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span><strong>تنبيه:</strong> المادة 8 تحدد سقف المناوبات بـ 6 شهرياً (يمكن رفعها لـ 10 للضرورة القصوى).</span>
+                </div>
+            </div>
+
+            <div id="fixedRateMessage" class="hidden mt-6 bg-blue-50 text-blue-800 p-4 rounded-lg border border-blue-200 text-center">
+                <p class="font-bold">هذه الرتبة تخضع لنظام الجزاف الشهري (Forfaitaire)</p>
+                <p class="text-sm mt-1">المادة 7 من المرسوم التنفيذي 13-195</p>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <button id="calcBtn" class="bg-primary hover:bg-primaryDark text-white font-bold py-3 px-12 rounded-lg shadow-lg transform active:scale-95 transition duration-200 flex items-center gap-2 text-lg w-full md:w-auto justify-center">
+                    <span>حساب المنحة</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="resultSection" class="hidden animate-fade-in-up">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-100">
+                <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center">
+                    <h3 class="font-bold">النتيجة الشهرية</h3>
+                    <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">Net à payer</span>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex justify-between items-center pb-4 border-b border-dashed border-slate-200">
+                            <span class="text-slate-500 font-medium">المبلغ الخام (Brut)</span>
+                            <span class="text-xl font-bold text-slate-800 font-mono" id="resBrut">0.00 دج</span>
+                        </div>
+
+                        <div class="bg-red-50 p-4 rounded-lg space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-red-700">الضمان الاجتماعي (9%)</span>
+                                <span class="font-mono font-bold text-red-700" id="resSS">- 0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-red-700">الضريبة على الدخل (10%)</span>
+                                <span class="font-mono font-bold text-red-700" id="resIRG">- 0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 bg-emerald-50 p-5 rounded-xl border border-emerald-100 flex justify-between items-center">
+                            <div>
+                                <span class="block text-emerald-600 text-sm font-bold">الصافي للدفع</span>
+                                <span class="block text-emerald-400 text-xs">Net mensuel</span>
+                            </div>
+                            <span class="text-3xl font-extrabold text-emerald-700 font-mono" id="resNet">0.00 دج</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-6 py-3 text-xs text-slate-400 text-center border-t border-slate-100">
+                    * الحساب تقريبي: الاقتطاع الضريبي 10% (نظام المنح المنفصلة).
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm">
+                تطوير <strong class="text-primary">Ferhat Hamza</strong> © 2025
+            </p>
+        </div>
+    </footer>
+
+    <script src="script4.js"></script>
+</body>
+</html>
