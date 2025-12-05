@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 1. Calculate Indices
         const baseIndex = data.base;
-        const degreeIndex = data.step * degree -1;
+        const degreeIndex = data.step * degree;
         const totalIndex = baseIndex + degreeIndex;
 
         // 2. Calculate Main Salary (Base for PRI)
