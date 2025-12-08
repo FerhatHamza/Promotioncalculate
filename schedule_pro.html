@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garde Planning Generator - Pro</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        
+        /* A4 Paper Styling */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 10mm auto;
+            border: 1px solid #d3d3d3;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th, td { border: 1px solid #4b5563; padding: 2px; text-align: center; height: 28px; }
+        th { background-color: #f3f4f6; font-weight: bold; padding: 6px; }
+        
+        /* Dropdown Styling inside table */
+        select.cell-select {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            text-align-last: center;
+            font-family: inherit;
+            font-size: 11px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding: 4px 0;
+        }
+        select.cell-select:hover { background-color: rgba(0,0,0,0.02); }
+
+        /* Row Colors */
+        .weekend { background-color: #e5e7eb; } /* Grey for Fri/Sat */
+        .holiday { background-color: #fee2e2; } /* Red tint for Holidays */
+        .holiday-label { font-size: 9px; color: #b91c1c; display: block; line-height: 1; margin-top: 1px;}
+
+        /* Print Specifics */
+        @media print {
+            body { background: none; margin: 0; }
+            .no-print { display: none !important; }
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                background: initial;
+                page-break-after: always;
+            }
+            /* Hide dropdown arrow in print */
+            select { -webkit-appearance: none; -moz-appearance: none; appearance: none; border: none; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col md:flex-row h-screen overflow-hidden">
+
+    <aside class="no-print w-full md:w-96 bg-white shadow-md flex flex-col border-r z-20">
+        <div class="p-4 bg-blue-800 text-white">
+            <h1 class="text-xl font-bold">Planning Generator</h1>
+            <p class="text-xs text-blue-200">Algerian Health Sector</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+            
+            <div class="space-y-3">
+                <h3 class="font-bold text-gray-700 border-b pb-1">1. Période & Titres</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500">Mois</label>
+                        <select id="monthSelect" class="w-full border p-1.5 rounded text-sm bg-gray-50"></select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500">Année</label>
+                        <input type="number" id="yearInput" class="w-full border p-1.5 rounded text-sm bg-gray-50" value="2025">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500">Service</label>
+                    <input type="text" id="serviceTitle" class="w-full border p-1.5 rounded text-sm" value="Planning des gardes Médicales">
+                </div>
+                <button onclick="generateGrid()" class="w-full bg-blue-600 text-white py-2 rounded text-sm font-bold hover:bg-blue-700">Actualiser le Tableau</button>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="font-bold text-gray-700 border-b pb-1 flex justify-between items-center">
+                    2. Liste des Docteurs
+                    <span class="text-xs font-normal text-gray-400 bg-gray-100 px-2 rounded-full" id="docCount">0</span>
+                </h3>
+                
+                <div class="flex gap-2">
+                    <input type="text" id="newDocName" placeholder="Dr. Nom Prénom" class="flex-1 border p-1.5 rounded text-sm" onkeypress="handleEnter(event)">
+                    <button onclick="addDoctor()" class="bg-green-600 text-white px-3 rounded hover:bg-green-700 font-bold">+</button>
+                </div>
+
+                <div id="doctorList" class="max-h-32 overflow-y-auto space-y-1 bg-gray-50 p-2 rounded border text-sm">
+                    </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="font-bold text-gray-700 border-b pb-1">3. Colonnes (Horaires)</h3>
+                <div id="columnList" class="space-y-2"></div>
+                <button onclick="addColumn()" class="w-full border border-dashed border-blue-400 text-blue-600 py-1 rounded text-xs hover:bg-blue-50">+ Ajouter une colonne</button>
+            </div>
+
+        </div>
+
+        <div class="p-4 border-t bg-gray-50">
+            <button onclick="window.print()" class="w-full bg-gray-800 text-white py-3 rounded font-bold shadow hover:bg-black flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                Imprimer
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto bg-gray-200 p-4 md:p-8 flex justify-center">
+        
+        <div class="page">
+            
+            <div class="mb-6 text-center text-sm font-medium text-gray-800 leading-tight">
+                <p>République Algérienne Démocratique et Populaire</p>
+                <p>Ministère de la santé</p>
+                <p contenteditable="true" class="mt-1 font-bold outline-none hover:bg-yellow-50">Direction de la santé de la Wilaya de Ghardaia</p>
+                <p contenteditable="true" class="outline-none hover:bg-yellow-50">Etablissement public de santé de proximité - Berriane</p>
+            </div>
+
+            <div class="text-center mb-4">
+                <h2 id="displayTitle" class="text-xl font-bold underline decoration-2 underline-offset-4 uppercase">Planning des gardes</h2>
+                <p id="displayDate" class="text-md italic mt-1 font-semibold text-gray-600">Décembre 2025</p>
+            </div>
+
+            <table id="scheduleTable">
+                <thead>
+                    <tr id="tableHeaderRow">
+                        <th class="w-16">Date</th>
+                        <th class="w-10">Jour</th>
+                        </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+
+            <div class="mt-2 flex gap-4 text-[10px] text-gray-500 px-2">
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-gray-200 border border-gray-400 block"></span> Week-end</div>
+                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-red-100 border border-red-300 block"></span> Jours Fériés</div>
+            </div>
+
+            <div class="mt-8 flex justify-between text-sm font-bold px-8 pt-4">
+                <div class="text-center w-1/3">
+                    <p>Le Chef de service</p>
+                </div>
+                <div class="text-center w-1/3">
+                    <p>Le médecin coordinateur</p>
+                </div>
+                <div class="text-center w-1/3">
+                    <p>Le Directeur</p>
+                </div>
+            </div>
+
+            <div class="absolute bottom-4 right-10 text-[10px] text-gray-400">
+                Berriane Le: <span id="printDate"></span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Data: Public Holidays (Fixed & Islamic Estimates for 2024-2026) ---
+        // Format: "Month-Day": "Name" (Month is 0-indexed: Jan=0, Dec=11)
+        const fixedHolidays = {
+            "0-1": "Jour de l'An",
+            "0-12": "Yennayer",
+            "4-1": "Fête du Travail",
+            "6-5": "Fête de l'Indépendance",
+            "10-1": "Révolution"
+        };
+
+        // Variable Islamic Holidays (Approximate dates need manual check each year really, but good estimates)
+        const islamicHolidays = {
+            2025: {
+                "2-30": "Aïd El Fitr", "2-31": "Aïd El Fitr", // March 30-31
+                "5-6": "Aïd El Adha", "5-7": "Aïd El Adha", // June 6-7
+                "5-27": "Awal Moharram", // June 27
+                "6-6": "Achoura", // July 6
+                "8-5": "Mawlid Ennabawi" // Sept 5
+            },
+            2026: {
+                "2-20": "Aïd El Fitr",
+                "4-27": "Aïd El Adha",
+                "5-17": "Awal Moharram",
+                "7-25": "Mawlid Ennabawi"
+            }
+        };
+
+        // --- Data: Doctors (Pre-filled from your image) ---
+        let doctors = [
+            "Dr. Bouslama", "Dr. Ben Dib", "Dr. Djellali.L", "Dr. Djellali.I", 
+            "Dr. Zighem", "Dr. Sahri", "Dr. Hennous", "Dr. Hammadi", 
+            "Dr. Lallout", "Dr. Bouhbila", "Dr. Djaber", "Dr. Bedjloud"
+        ];
+        
+        // --- Configuration ---
+        const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        const daysShort = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+        let columns = [
+            { title: "08:00 - 20:00", width: "auto" },
+            { title: "20:00 - 08:00", width: "auto" },
+            { title: "Astreinte", width: "auto" }
+        ];
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const monthSelect = document.getElementById('monthSelect');
+            months.forEach((m, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.text = m;
+                monthSelect.appendChild(opt);
+            });
+            
+            // Set default to next month or current
+            const now = new Date();
+            monthSelect.value = now.getMonth(); 
+            document.getElementById('yearInput').value = now.getFullYear();
+            document.getElementById('printDate').innerText = now.toLocaleDateString('fr-FR');
+
+            renderDoctorList();
+            renderColumnControls();
+            generateGrid();
+        });
+
+        // --- Core Logic: Grid Generation ---
+        function generateGrid() {
+            // Update Title
+            document.getElementById('displayTitle').innerText = document.getElementById('serviceTitle').value;
+            const mIndex = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearInput').value);
+            document.getElementById('displayDate').innerText = `${months[mIndex]} ${year}`;
+
+            // 1. Headers
+            const thead = document.getElementById('tableHeaderRow');
+            thead.innerHTML = `<th class="w-10">J</th><th class="w-10">Date</th>`;
+            
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                th.innerHTML = `<input class="w-full bg-transparent text-center font-bold outline-none" value="${col.title}" onchange="updateColumnTitle(this)">`;
+                thead.appendChild(th);
+            });
+
+            // 2. Body
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            const daysInMonth = new Date(year, mIndex + 1, 0).getDate();
+
+            // Create Dropdown Options HTML once
+            let doctorOptions = `<option value="">-</option>`;
+            doctors.forEach(doc => {
+                doctorOptions += `<option value="${doc}">${doc}</option>`;
+            });
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(year, mIndex, d);
+                const dayOfWeek = dateObj.getDay(); 
+                
+                const tr = document.createElement('tr');
+                
+                // --- Color Logic ---
+                // 1. Check Holiday
+                const holidayName = getHolidayName(d, mIndex, year);
+                if (holidayName) {
+                    tr.classList.add('holiday');
+                } 
+                // 2. Check Weekend (Friday/Saturday)
+                else if (dayOfWeek === 5 || dayOfWeek === 6) {
+                    tr.classList.add('weekend');
+                }
+
+                // Day Column
+                const tdDay = document.createElement('td');
+                tdDay.innerHTML = `
+                    <span class="font-bold text-gray-700">${daysShort[dayOfWeek]}</span>
+                    ${holidayName ? `<span class="holiday-label">${holidayName}</span>` : ''}
+                `;
+                
+                // Date Column
+                const tdDate = document.createElement('td');
+                tdDate.innerText = d < 10 ? `0${d}` : d;
+                tdDate.className = "font-mono font-bold";
+
+                tr.appendChild(tdDay);
+                tr.appendChild(tdDate);
+
+                // Doctor Select Columns
+                columns.forEach(() => {
+                    const td = document.createElement('td');
+                    td.innerHTML = `<select class="cell-select">${doctorOptions}</select>`;
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            }
+        }
+
+        // --- Helper: Holidays ---
+        function getHolidayName(day, monthIndex, year) {
+            const key = `${monthIndex}-${day}`;
+            
+            // Check Fixed
+            if (fixedHolidays[key]) return fixedHolidays[key];
+
+            // Check Islamic (Variable)
+            if (islamicHolidays[year] && islamicHolidays[year][key]) {
+                return islamicHolidays[year][key];
+            }
+            return null;
+        }
+
+        // --- Doctor Management ---
+        function renderDoctorList() {
+            const list = document.getElementById('doctorList');
+            list.innerHTML = '';
+            document.getElementById('docCount').innerText = doctors.length;
+
+            doctors.forEach((doc, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center group";
+                div.innerHTML = `
+                    <span>${doc}</span>
+                    <button onclick="removeDoctor(${idx})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100">x</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addDoctor() {
+            const input = document.getElementById('newDocName');
+            const name = input.value.trim();
+            if (name) {
+                doctors.push(name);
+                input.value = '';
+                renderDoctorList();
+                generateGrid(); // Re-render table to update dropdowns
+            }
+        }
+
+        function removeDoctor(idx) {
+            doctors.splice(idx, 1);
+            renderDoctorList();
+            generateGrid();
+        }
+        
+        function handleEnter(e) {
+            if (e.key === 'Enter') addDoctor();
+        }
+
+        // --- Column Management ---
+        function renderColumnControls() {
+            const list = document.getElementById('columnList');
+            list.innerHTML = '';
+            
+            columns.forEach((col, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex gap-2 items-center";
+                div.innerHTML = `
+                    <input type="text" value="${col.title}" class="border p-1 rounded text-xs flex-1" onchange="updateColConfig(${idx}, this.value)">
+                    <button onclick="removeColumn(${idx})" class="text-red-500 hover:text-red-700">x</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addColumn() {
+            columns.push({ title: "Nouveau", width: "auto" });
+            renderColumnControls();
+            generateGrid();
+        }
+
+        function removeColumn(idx) {
+            if (columns.length > 1) {
+                columns.splice(idx, 1);
+                renderColumnControls();
+                generateGrid();
+            } else {
+                alert("Impossible de supprimer la dernière colonne");
+            }
+        }
+
+        function updateColConfig(idx, newVal) {
+            columns[idx].title = newVal;
+            generateGrid();
+        }
+
+        // Visual update only for direct table edit
+        window.updateColumnTitle = function(input) {}
+    </script>
+</body>
+</html>
