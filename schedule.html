@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garde Planning Generator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        
+        /* A4 Paper Styling */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 10mm auto;
+            border: 1px solid #d3d3d3;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th, td { border: 1px solid black; padding: 4px; text-align: center; }
+        th { background-color: #f3f4f6; font-weight: bold; }
+        
+        /* Input inside table cells */
+        .cell-input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        /* Weekend Highlight */
+        .weekend { background-color: #e5e7eb; } /* Light gray for Fri/Sat */
+
+        /* Print Specifics */
+        @media print {
+            body { background: none; margin: 0; }
+            .no-print { display: none !important; }
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                background: initial;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col md:flex-row h-screen overflow-hidden">
+
+    <aside class="no-print w-full md:w-80 bg-white shadow-md p-6 flex flex-col gap-4 overflow-y-auto z-10">
+        <h1 class="text-xl font-bold text-blue-800">منشئ جداول المناوبة</h1>
+        
+        <div class="space-y-2 border-b pb-4">
+            <label class="block text-sm font-medium">Institution / Wilaya</label>
+            <input type="text" id="institution" class="w-full border p-2 rounded text-sm" value="Direction de la santé... Ghardaia">
+            
+            <label class="block text-sm font-medium">Service / Title</label>
+            <input type="text" id="serviceTitle" class="w-full border p-2 rounded text-sm" value="Planning des gardes Médicales">
+            
+            <div class="flex gap-2">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium">Month</label>
+                    <select id="monthSelect" class="w-full border p-2 rounded text-sm"></select>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium">Year</label>
+                    <input type="number" id="yearInput" class="w-full border p-2 rounded text-sm" value="2025">
+                </div>
+            </div>
+            <button onclick="generateGrid()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-2">Update Grid</button>
+        </div>
+
+        <div class="space-y-2 flex-grow">
+            <h3 class="font-bold text-sm text-gray-700">Columns Settings</h3>
+            <div id="columnList" class="space-y-2">
+                </div>
+            <button onclick="addColumn()" class="w-full border border-dashed border-blue-500 text-blue-600 py-1 rounded hover:bg-blue-50 text-sm">+ Add Column</button>
+        </div>
+
+        <div class="mt-auto pt-4 border-t space-y-2">
+            <button onclick="window.print()" class="w-full bg-green-600 text-white py-3 rounded font-bold shadow hover:bg-green-700 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                Print / Save PDF
+            </button>
+            <p class="text-xs text-gray-500 text-center">Tip: Use landscape mode in print settings if many columns.</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto bg-gray-200 p-4 md:p-8 flex justify-center">
+        
+        <div class="page" contenteditable="false">
+            
+            <div class="mb-6 text-center text-sm font-medium text-gray-800">
+                <p>République Algérienne Démocratique et Populaire</p>
+                <p>Ministère de la santé</p>
+                <p id="displayInstitution" class="mt-1 font-bold">Direction de la santé... Ghardaia</p>
+                <p>Etablissement public de santé de proximité - Berriane</p>
+            </div>
+
+            <div class="text-center mb-4">
+                <h2 id="displayTitle" class="text-xl font-bold underline decoration-2 underline-offset-4">Planning des gardes</h2>
+                <p id="displayDate" class="text-md italic mt-1">Dec-25</p>
+            </div>
+
+            <table id="scheduleTable">
+                <thead>
+                    <tr id="tableHeaderRow">
+                        <th class="w-16">Date</th>
+                        <th class="w-8">Jour</th>
+                        </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+
+            <div class="mt-8 flex justify-between text-sm font-bold px-8">
+                <div class="text-center">
+                    <p>Le Chef de service</p>
+                    <div class="h-20 w-32 mt-2"></div> </div>
+                <div class="text-center">
+                    <p>Le médecin coordinateur</p>
+                    <div class="h-20 w-32 mt-2"></div>
+                </div>
+                <div class="text-center">
+                    <p>Le Directeur</p>
+                    <div class="h-20 w-32 mt-2"></div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-4 right-10 text-[10px] text-gray-500">
+                Berriane Le: <span id="printDate"></span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- State Management ---
+        const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        const daysShort = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+        
+        // Default Columns config
+        let columns = [
+            { title: "08:00 - 20:00", width: "auto" },
+            { title: "20:00 - 08:00", width: "auto" }
+        ];
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate Months
+            const monthSelect = document.getElementById('monthSelect');
+            months.forEach((m, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.text = m;
+                monthSelect.appendChild(opt);
+            });
+            // Set current month/year
+            const now = new Date();
+            monthSelect.value = now.getMonth();
+            document.getElementById('yearInput').value = now.getFullYear();
+            
+            // Set Print Date footer
+            document.getElementById('printDate').innerText = now.toLocaleDateString('fr-FR');
+
+            renderColumnControls();
+            generateGrid();
+        });
+
+        // --- Core Logic ---
+
+        function generateGrid() {
+            // Update Headers
+            document.getElementById('displayInstitution').innerText = document.getElementById('institution').value;
+            document.getElementById('displayTitle').innerText = document.getElementById('serviceTitle').value;
+            
+            const mIndex = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearInput').value);
+            document.getElementById('displayDate').innerText = `${months[mIndex]} - ${year}`;
+
+            // 1. Build Table Header
+            const thead = document.getElementById('tableHeaderRow');
+            thead.innerHTML = `<th class="w-10">J</th><th class="w-16">Date</th>`; // Reset
+            
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                th.innerHTML = `<input class="cell-input font-bold" value="${col.title}" onchange="updateColumnTitle(this)">`;
+                thead.appendChild(th);
+            });
+
+            // 2. Build Table Body
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            const daysInMonth = new Date(year, mIndex + 1, 0).getDate();
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(year, mIndex, d);
+                const dayOfWeek = dateObj.getDay(); // 0 = Sun, 5 = Fri, 6 = Sat
+                
+                const tr = document.createElement('tr');
+                
+                // Highlight Weekend (Friday & Saturday in Algeria usually, or Thu/Fri depending on sector, images implies standard grid)
+                // Looking at image 5: VEN=5 (Fri), SAM=6 (Sat). The highlighted rows seem to follow weekends.
+                if (dayOfWeek === 5 || dayOfWeek === 6) {
+                    tr.classList.add('weekend');
+                }
+
+                // Day Name Column
+                const tdDay = document.createElement('td');
+                tdDay.innerText = daysShort[dayOfWeek];
+                tdDay.className = "font-bold text-gray-600";
+                
+                // Date Number Column
+                const tdDate = document.createElement('td');
+                tdDate.innerText = d < 10 ? `0${d}` : d;
+
+                tr.appendChild(tdDay);
+                tr.appendChild(tdDate);
+
+                // User Columns
+                columns.forEach(() => {
+                    const td = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.className = "cell-input";
+                    input.type = "text";
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            }
+        }
+
+        // --- Column Management ---
+
+        function renderColumnControls() {
+            const list = document.getElementById('columnList');
+            list.innerHTML = '';
+            
+            columns.forEach((col, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex gap-2 items-center";
+                div.innerHTML = `
+                    <input type="text" value="${col.title}" class="border p-1 rounded text-xs flex-1" onchange="updateColConfig(${idx}, this.value)">
+                    <button onclick="removeColumn(${idx})" class="text-red-500 hover:text-red-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addColumn() {
+            columns.push({ title: "New Col", width: "auto" });
+            renderColumnControls();
+            generateGrid();
+        }
+
+        function removeColumn(idx) {
+            if (columns.length > 1) {
+                columns.splice(idx, 1);
+                renderColumnControls();
+                generateGrid();
+            } else {
+                alert("You need at least one column.");
+            }
+        }
+
+        function updateColConfig(idx, newVal) {
+            columns[idx].title = newVal;
+            generateGrid();
+        }
+
+        // Allow editing header directly in table to sync back to config
+        window.updateColumnTitle = function(input) {
+            // This is a visual update, strictly speaking, we'd map it back to the `columns` array if we wanted strict persistence, 
+            // but for printing purposes, editing the input is enough.
+        }
+
+    </script>
+</body>
+</html>
