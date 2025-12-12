@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Tracker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .hidden { display: none !important; }
+        /* Role Badges */
+        .role-admin { background: #7e22ce; color: white; }
+        .role-sup { background: #2563eb; color: white; }
+        .role-mem { background: #16a34a; color: white; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="bg-white shadow border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 text-white p-2 rounded-lg font-bold">MT</div>
+                <h1 class="text-xl font-bold text-gray-800">Maintenance Tracker</h1>
+            </div>
+            <div id="userInfo" class="hidden flex items-center gap-4">
+                <div class="text-right">
+                    <p id="navUsername" class="text-sm font-bold text-gray-700">User</p>
+                    <span id="navRole" class="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">Role</span>
+                </div>
+                <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm font-medium">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-6">
+        
+        <div id="view-login" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg mt-10">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Select Simulation Role:</label>
+                    <div class="grid grid-cols-3 gap-2 mt-2">
+                        <button onclick="mockLogin('admin')" class="p-2 text-xs font-bold rounded bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-200">Admin</button>
+                        <button onclick="mockLogin('supervisor')" class="p-2 text-xs font-bold rounded bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200">Supervisor</button>
+                        <button onclick="mockLogin('member')" class="p-2 text-xs font-bold rounded bg-green-100 text-green-700 hover:bg-green-200 border border-green-200">Member</button>
+                    </div>
+                </div>
+                
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-400 text-xs">OR ENTER CREDENTIALS</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <input type="text" id="username" placeholder="Username" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="password" id="password" placeholder="Password" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <button type="submit" class="w-full bg-gray-800 text-white p-3 rounded-lg font-bold hover:bg-gray-900 transition">Sign In</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="view-admin" class="hidden max-w-6xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6 text-purple-800">Admin Dashboard</h2>
+            
+            <div class="bg-white rounded-xl shadow p-6 mb-6">
+                <h3 class="text-lg font-bold mb-4 border-b pb-2">System Users & Groups</h3>
+                
+                <form onsubmit="adminAddUser(event)" class="flex gap-4 mb-6 bg-purple-50 p-4 rounded-lg">
+                    <input id="newUserName" type="text" placeholder="Username" class="flex-1 border p-2 rounded" required>
+                    <select id="newUserRole" class="border p-2 rounded" required>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Member">Member</option>
+                    </select>
+                    <input id="newUserGroup" type="text" placeholder="Group Name (e.g. Electrical)" class="flex-1 border p-2 rounded" required>
+                    <button type="submit" class="bg-purple-600 text-white px-6 rounded font-bold hover:bg-purple-700">Add User</button>
+                </form>
+
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-100 text-gray-600 uppercase">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th class="p-3">Username</th>
+                            <th class="p-3">Role</th>
+                            <th class="p-3">Group</th>
+                            <th class="p-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminUserTable" class="divide-y">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-supervisor" class="hidden max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-blue-800">Supervisor Dashboard</h2>
+                    <p class="text-gray-500 text-sm">Group: <span id="supGroupName" class="font-bold text-black">--</span></p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="switchSupTab('logs')" class="px-4 py-2 bg-blue-600 text-white rounded shadow text-sm font-bold">Maintenance Logs</button>
+                    <button onclick="switchSupTab('members')" class="px-4 py-2 bg-white text-gray-700 border rounded shadow text-sm font-bold">Group Members</button>
+                </div>
+            </div>
+
+            <div id="sup-tab-logs" class="bg-white rounded-xl shadow overflow-hidden">
+                <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-700">Intervention Tracking Table</h3>
+                    <button onclick="renderLogs()" class="text-blue-600 text-xs hover:underline">Refresh</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+                            <tr>
+                                <th class="p-4">Date</th>
+                                <th class="p-4">Group Member</th>
+                                <th class="p-4">Designation (Task)</th>
+                                <th class="p-4">Serial Nbr</th>
+                                <th class="p-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supLogTable" class="divide-y divide-gray-100">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="sup-tab-members" class="hidden bg-white rounded-xl shadow p-6">
+                <h3 class="font-bold text-lg mb-4">Manage Group Members</h3>
+                <p class="text-sm text-gray-500 mb-4">These are the members currently assigned to your group.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="supMembersGrid">
+                    </div>
+            </div>
+        </div>
+
+        <div id="view-member" class="hidden max-w-lg mx-auto">
+            <h2 class="text-2xl font-bold mb-2 text-green-800">My Tasks</h2>
+            <p class="text-gray-500 text-sm mb-6">Group: <span id="memGroupName" class="font-bold">--</span></p>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border-t-4 border-green-500">
+                <h3 class="font-bold text-lg mb-4">Point Task (Log Intervention)</h3>
+                <form onsubmit="memberSubmitLog(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Designation / Equipment</label>
+                        <input id="logDesignation" type="text" placeholder="e.g. Generator Pump A" class="w-full border p-3 rounded bg-gray-50" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Serial Number</label>
+                        <input id="logSerial" type="text" placeholder="e.g. SN-492921" class="w-full border p-3 rounded bg-gray-50" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Description of Work</label>
+                        <textarea id="logDesc" rows="3" placeholder="Changed oil filter..." class="w-full border p-3 rounded bg-gray-50"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Status</label>
+                        <select id="logStatus" class="w-full border p-3 rounded bg-gray-50">
+                            <option value="Completed">Completed</option>
+                            <option value="Pending">Pending / In Progress</option>
+                            <option value="Issue">Critical Issue</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded font-bold shadow hover:bg-green-700">Submit Report</button>
+                </form>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-gray-700 mb-2">My Recent Submissions</h3>
+                <ul id="memHistory" class="space-y-2 text-sm text-gray-600">
+                    </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- DATABASE MOCK (LocalStorage) ---
+        const DB_KEY_USERS = 'mt_users';
+        const DB_KEY_LOGS = 'mt_logs';
+
+        // Initial Data Seeding
+        function initDB() {
+            if (!localStorage.getItem(DB_KEY_USERS)) {
+                const defaultUsers = [
+                    { id: 1, name: 'Admin User', role: 'admin', group: 'All' },
+                    { id: 2, name: 'Supervisor Ahmed', role: 'supervisor', group: 'Maintenance A' },
+                    { id: 3, name: 'Supervisor Sarah', role: 'supervisor', group: 'Maintenance B' },
+                    { id: 4, name: 'Tech Omar', role: 'member', group: 'Maintenance A' },
+                    { id: 5, name: 'Tech Ali', role: 'member', group: 'Maintenance A' },
+                    { id: 6, name: 'Tech Yasmine', role: 'member', group: 'Maintenance B' }
+                ];
+                localStorage.setItem(DB_KEY_USERS, JSON.stringify(defaultUsers));
+            }
+            if (!localStorage.getItem(DB_KEY_LOGS)) {
+                const defaultLogs = [
+                    { id: 101, date: new Date().toISOString(), member: 'Tech Omar', group: 'Maintenance A', desig: 'AC Unit 4', serial: 'AC-992', status: 'Completed' },
+                    { id: 102, date: new Date().toISOString(), member: 'Tech Ali', group: 'Maintenance A', desig: 'Elevator Shaft', serial: 'ELV-001', status: 'Pending' }
+                ];
+                localStorage.setItem(DB_KEY_LOGS, JSON.stringify(defaultLogs));
+            }
+        }
+
+        // --- STATE MANAGEMENT ---
+        let currentUser = null;
+
+        function getUsers() { return JSON.parse(localStorage.getItem(DB_KEY_USERS)); }
+        function saveUsers(users) { localStorage.setItem(DB_KEY_USERS, JSON.stringify(users)); }
+        function getLogs() { return JSON.parse(localStorage.getItem(DB_KEY_LOGS)); }
+        function saveLogs(logs) { localStorage.setItem(DB_KEY_LOGS, JSON.stringify(logs)); }
+
+        // --- AUTHENTICATION ---
+        function mockLogin(role) {
+            const users = getUsers();
+            // Find first user with this role
+            const user = users.find(u => u.role === role);
+            if (user) login(user);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const users = getUsers();
+            const user = users.find(u => u.name.toLowerCase() === username.toLowerCase());
+            
+            if (user) login(user);
+            else alert('User not found (Try "Tech Omar" or "Supervisor Ahmed")');
+        }
+
+        function login(user) {
+            currentUser = user;
+            
+            // UI Updates
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('navUsername').innerText = user.name;
+            document.getElementById('navRole').innerText = user.role.toUpperCase();
+
+            // Routing
+            if (user.role === 'admin') showView('view-admin', renderAdmin);
+            else if (user.role === 'supervisor') showView('view-supervisor', renderSupervisor);
+            else if (user.role === 'member') showView('view-member', renderMember);
+        }
+
+        function logout() {
+            currentUser = null;
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-login').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+        }
+
+        function showView(viewId, callback) {
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+            if (callback) callback();
+        }
+
+        // --- ADMIN LOGIC ---
+        function renderAdmin() {
+            const users = getUsers();
+            const tbody = document.getElementById('adminUserTable');
+            tbody.innerHTML = '';
+
+            users.forEach(u => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 font-mono text-xs text-gray-400">#${u.id}</td>
+                        <td class="p-3 font-bold text-gray-700">${u.name}</td>
+                        <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${u.role === 'supervisor' ? 'bg-blue-100 text-blue-700' : (u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700')}">${u.role}</span></td>
+                        <td class="p-3 text-gray-500">${u.group}</td>
+                        <td class="p-3">
+                            <button onclick="deleteUser(${u.id})" class="text-red-500 hover:text-red-700 text-xs font-bold">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function adminAddUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('newUserName').value;
+            const role = document.getElementById('newUserRole').value.toLowerCase();
+            const group = document.getElementById('newUserGroup').value;
+
+            const users = getUsers();
+            users.push({ id: Date.now(), name, role, group });
+            saveUsers(users);
+            
+            document.getElementById('newUserName').value = '';
+            renderAdmin();
+        }
+
+        function deleteUser(id) {
+            if(confirm("Delete this user?")) {
+                let users = getUsers();
+                users = users.filter(u => u.id !== id);
+                saveUsers(users);
+                renderAdmin();
+            }
+        }
+
+        // --- SUPERVISOR LOGIC ---
+        function renderSupervisor() {
+            document.getElementById('supGroupName').innerText = currentUser.group;
+            renderLogs();
+            renderSupMembers();
+        }
+
+        function renderLogs() {
+            // Filter logs for this Supervisor's Group
+            const logs = getLogs().filter(l => l.group === currentUser.group);
+            const tbody = document.getElementById('supLogTable');
+            tbody.innerHTML = '';
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">No interventions recorded for this group yet.</td></tr>`;
+                return;
+            }
+
+            logs.forEach(l => {
+                const dateObj = new Date(l.date);
+                const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                let statusColor = 'bg-gray-100 text-gray-600';
+                if(l.status === 'Completed') statusColor = 'bg-green-100 text-green-700';
+                if(l.status === 'Pending') statusColor = 'bg-yellow-100 text-yellow-700';
+                if(l.status === 'Issue') statusColor = 'bg-red-100 text-red-700';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 border-b border-gray-100">
+                        <td class="p-4 text-gray-500 font-mono text-xs">${dateStr}</td>
+                        <td class="p-4 font-bold text-gray-800">${l.member}</td>
+                        <td class="p-4 text-gray-700">${l.desig}</td>
+                        <td class="p-4 font-mono text-blue-600 text-xs">${l.serial}</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-bold ${statusColor}">${l.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderSupMembers() {
+            const users = getUsers();
+            const members = users.filter(u => u.group === currentUser.group && u.role === 'member');
+            const grid = document.getElementById('supMembersGrid');
+            grid.innerHTML = '';
+
+            if (members.length === 0) {
+                grid.innerHTML = `<p class="text-gray-400">No members in your group.</p>`;
+                return;
+            }
+
+            members.forEach(m => {
+                grid.innerHTML += `
+                    <div class="border rounded-lg p-4 flex items-center gap-3 hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                            ${m.name.charAt(0)}
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">${m.name}</p>
+                            <p class="text-xs text-gray-500">Member ID: ${m.id}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function switchSupTab(tab) {
+            document.getElementById('sup-tab-logs').classList.add('hidden');
+            document.getElementById('sup-tab-members').classList.add('hidden');
+            document.getElementById('sup-tab-' + tab).classList.remove('hidden');
+        }
+
+        // --- MEMBER LOGIC ---
+        function renderMember() {
+            document.getElementById('memGroupName').innerText = currentUser.group;
+            renderMemberHistory();
+        }
+
+        function memberSubmitLog(e) {
+            e.preventDefault();
+            const logs = getLogs();
+            
+            const newLog = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                member: currentUser.name,
+                group: currentUser.group,
+                desig: document.getElementById('logDesignation').value,
+                serial: document.getElementById('logSerial').value,
+                desc: document.getElementById('logDesc').value,
+                status: document.getElementById('logStatus').value
+            };
+
+            logs.unshift(newLog); // Add to top
+            saveLogs(logs);
+
+            // Reset Form
+            document.querySelector('form').reset();
+            renderMemberHistory();
+            alert("Maintenance reported successfully!");
+        }
+
+        function renderMemberHistory() {
+            const logs = getLogs().filter(l => l.member === currentUser.name);
+            const list = document.getElementById('memHistory');
+            list.innerHTML = '';
+
+            logs.slice(0, 5).forEach(l => {
+                list.innerHTML += `
+                    <li class="border-l-4 border-green-500 bg-white p-3 shadow-sm rounded-r">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-gray-700">${l.desig}</span>
+                            <span class="text-xs text-gray-400">${new Date(l.date).toLocaleDateString()}</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">SN: ${l.serial} - <span class="text-green-600 font-bold">${l.status}</span></div>
+                    </li>
+                `;
+            });
+        }
+
+        // Initialize
+        initDB();
+    </script>
+</body>
+</html>
