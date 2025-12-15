@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquête de Vaccination</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📋 Enquête de Vaccination</h1>
+        <p>Formulaire de collecte de données</p>
+    </header>
+
+    <form id="vaccineForm">
+        <fieldset>
+            <legend>📍 Localisation et Ménage</legend>
+            
+            <label>1. Lieu de l'enquête</label>
+            <select name="lieu" required>
+                <option value="">-- Choisir --</option>
+                <option value="Rue">Rue (R)</option>
+                <option value="Marche">Marché (M)</option>
+                <option value="Gare">Gare (G)</option>
+                <option value="Autre">Autre</option>
+            </select>
+
+            <label>2. Visite des équipes mobiles ?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="visite" value="Oui" required> Oui</label>
+                <label><input type="radio" name="visite" value="Non"> Non</label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>👶 Informations Enfant</legend>
+
+            <label>3. Age (en mois)</label>
+            <input type="number" name="age" required>
+
+            <label>4. Sexe</label>
+            <div class="radio-group">
+                <label><input type="radio" name="sexe" value="M" required> Masculin</label>
+                <label><input type="radio" name="sexe" value="F"> Féminin</label>
+            </div>
+
+            <label>5. L'enfant est-il vacciné ? (Marque/Carnet)</label>
+            <div class="radio-group">
+                <label><input type="radio" name="vaccine" value="Oui" id="vacOui" required> Oui</label>
+                <label><input type="radio" name="vaccine" value="Non" id="vacNon"> Non</label>
+            </div>
+
+            <div id="reasonSection" class="hidden">
+                <label class="alert">⚠️ Si Non, pourquoi ?</label>
+                <select name="raison">
+                    <option value="">-- Sélectionner la raison --</option>
+                    <optgroup label="Absence">
+                        <option value="Absent">Absent</option>
+                        <option value="Refus">Refus</option>
+                        <option value="Indisponible">Indisponibilité parents</option>
+                    </optgroup>
+                    <optgroup label="Refus">
+                        <option value="Maladie">Enfant malade</option>
+                        <option value="PasDecision">Pas moi qui décide</option>
+                        <option value="Danger">Peur du danger</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <label>6. Parent informé de la campagne ?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="informe" value="Oui" required> Oui</label>
+                <label><input type="radio" name="informe" value="Non"> Non</label>
+            </div>
+        </fieldset>
+
+        <button type="submit" class="btn-submit">💾 Enregistrer les données</button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="admin.html" style="color: #666; font-size: 0.9em;">Accès Admin (Voir Résultats)</a>
+    </div>
+</div>
+
+<script>
+    // Logic to show/hide the Reason field
+    const radioOui = document.getElementById('vacOui');
+    const radioNon = document.getElementById('vacNon');
+    const reasonSection = document.getElementById('reasonSection');
+
+    function toggleReason() {
+        if(radioNon.checked) {
+            reasonSection.classList.remove('hidden');
+            reasonSection.querySelector('select').setAttribute('required', 'true');
+        } else {
+            reasonSection.classList.add('hidden');
+            reasonSection.querySelector('select').removeAttribute('required');
+        }
+    }
+
+    radioOui.addEventListener('change', toggleReason);
+    radioNon.addEventListener('change', toggleReason);
+
+    // Logic to Save Data to LocalStorage
+    document.getElementById('vaccineForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // 1. Gather Data
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        data.timestamp = new Date().toLocaleString(); // Add time
+
+        // 2. Get existing data from storage
+        let existingData = JSON.parse(localStorage.getItem('surveyData')) || [];
+        
+        // 3. Add new entry
+        existingData.push(data);
+        
+        // 4. Save back to storage
+        localStorage.setItem('surveyData', JSON.stringify(existingData));
+
+        // 5. Feedback
+        alert('Données enregistrées avec succès !');
+        e.target.reset();
+        reasonSection.classList.add('hidden');
+    });
+</script>
+
+</body>
+</html>
