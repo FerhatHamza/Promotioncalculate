@@ -6,10 +6,19 @@
     <title>استبيان حملة تلقيح الأطفال</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        body {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+        }
+        input, select {
+            user-select: auto; /* Allow typing in inputs */
+        }
+    </style>
 </head>
-<body>
-
-<div class="container">
+<body oncontextmenu="return false;"> <div class="container">
     <header>
         <h1>استبيان موجه للأولياء</h1>
         <p>حول حملة تلقيح الأطفال (أقل من 5 سنوات) - المرحلة الأولى</p>
@@ -23,26 +32,20 @@
 
         <fieldset style="border-top: 3px solid #3498db;">
             <legend style="color: #3498db;">👤 معلومات الولي (المجيب)</legend>
-            
             <label>الاسم الكامل (إجباري):</label>
             <input type="text" name="fullname" required placeholder="أكتب اسمك الكامل هنا">
-
             <label>البريد الإلكتروني (إجباري):</label>
             <input type="email" name="email" required placeholder="example@email.com">
-
             <label>رقم الهاتف (اختياري):</label>
             <input type="tel" name="phone" placeholder="0X XX XX XX XX">
         </fieldset>
 
         <fieldset>
             <legend>📝 المعلومات العامة</legend>
-
             <label>بلدية الإقامة:</label>
-            <input type="text" name="municipality" required placeholder="أكتب اسم البلدية">
-
+            <input type="text" name="municipality" required>
             <label>الحي:</label>
-            <input type="text" name="neighborhood" required placeholder="أكتب اسم الحي">
-
+            <input type="text" name="neighborhood" required>
             <label>الحالة العائلية للوالدين:</label>
             <select name="family_status" required>
                 <option value="">-- اختر --</option>
@@ -50,31 +53,21 @@
                 <option value="مطلقين">مطلقين</option>
                 <option value="وفاة أحد الوالدين">وفاة أحد الوالدين</option>
             </select>
-
             <div class="row">
-                <div class="col">
-                    <label>عمر الأب:</label>
-                    <input type="number" name="father_age" placeholder="السن">
-                </div>
-                <div class="col">
-                    <label>عمر الأم:</label>
-                    <input type="number" name="mother_age" placeholder="السن">
-                </div>
+                <div class="col"><label>عمر الأب:</label><input type="number" name="father_age"></div>
+                <div class="col"><label>عمر الأم:</label><input type="number" name="mother_age"></div>
             </div>
-
             <label>عدد الأولاد (الإجمالي):</label>
             <input type="number" name="total_children_all" required>
         </fieldset>
 
         <fieldset>
             <legend>1️⃣ زيارة فرق التلقيح</legend>
-
             <p class="question-title">1. هل زارتكم فرق التلقيح المتنقلة إلى المنزل؟</p>
             <div class="radio-group">
                 <label><input type="radio" name="mobile_team_visit" value="نعم" required> نعم</label>
                 <label><input type="radio" name="mobile_team_visit" value="لا"> لا</label>
             </div>
-
             <p class="question-title">2. هل تنقّلتم أنتم لتطعيم أطفالكم في مركز التلقيح؟</p>
             <div class="radio-group">
                 <label><input type="radio" name="parents_moved" value="نعم" required> نعم</label>
@@ -84,21 +77,16 @@
 
         <fieldset>
             <legend>2️⃣ الأطفال في الأسرة (شهرين - 5 سنوات)</legend>
-
             <label>3. عدد الأطفال المعنيين (شهرين - 5 سنوات):</label>
             <input type="number" name="target_children_count" required>
-
             <label>4. عدد الأطفال الذين تم تطعيمهم:</label>
-            <p class="hint">(علامة على الإصبع أو دفتر تلقيح)</p>
             <input type="number" name="vaccinated_count" required>
-
             <label>5. عدد الأطفال الذين لم يتم تطعيمهم:</label>
             <input type="number" name="unvaccinated_count" id="unvaccinatedInput" required>
         </fieldset>
 
         <fieldset id="reasonsSection" class="hidden">
             <legend>3️⃣ أسباب عدم التلقيح</legend>
-            
             <label>6. ما هو السبب الرئيسي لعدم التطعيم؟</label>
             <select name="main_reason" id="mainReasonSelect">
                 <option value="">-- اختر السبب --</option>
@@ -106,15 +94,14 @@
                 <option value="رفض">رفض التلقيح</option>
                 <option value="أولياء غير متوفرين">الأولياء غير متوفرين</option>
                 <option value="لا يوجد نقل">عدم وجود وسيلة نقل</option>
-                <option value="زائر">الطفل زائر (غير مقيم)</option>
+                <option value="زائر">الطفل زائر</option>
                 <option value="لم نبلغ">لم يتم إبلاغنا بالحملة</option>
                 <option value="آخر">سبب آخر</option>
             </select>
-            
             <input type="text" name="main_reason_other" id="mainReasonOther" class="hidden" placeholder="اذكر السبب الآخر هنا">
-
+            
             <div id="absenceSubReason" class="sub-section hidden">
-                <label class="sub-label">🔴 إذا كان السبب هو الغياب، ما هو السبب؟</label>
+                <label class="sub-label">🔴 سبب الغياب؟</label>
                 <select name="absence_detail">
                     <option value="">-- اختر --</option>
                     <option value="مريض">الطفل مريض</option>
@@ -122,37 +109,35 @@
                     <option value="لعب">كان يلعب خارج المنزل</option>
                     <option value="اجتماعي">سبب اجتماعي</option>
                     <option value="سفر">في سفر</option>
-                    <option value="آخر">سبب آخر (أكتبه بالأسفل)</option>
+                    <option value="آخر">سبب آخر</option>
                 </select>
-                <input type="text" name="absence_other_text" placeholder="توضيح سبب الغياب الآخر" style="margin-top:5px;">
+                <input type="text" name="absence_other_text" placeholder="توضيح...">
             </div>
 
             <div id="refusalSubReason" class="sub-section hidden">
-                <label class="sub-label">🔴 إذا كان السبب هو الرفض، ما هو السبب؟</label>
+                <label class="sub-label">🔴 سبب الرفض؟</label>
                 <select name="refusal_detail">
                     <option value="">-- اختر --</option>
                     <option value="مريض">الطفل مريض</option>
                     <option value="ليس قراري">القرار ليس بيدي</option>
                     <option value="خطير">اللقاح خطير</option>
                     <option value="بدون سبب">لم يُذكر سبب</option>
-                    <option value="معلومات خاطئة">معلومات خاطئة عن التلقيح</option>
-                    <option value="آخر">سبب آخر (أكتبه بالأسفل)</option>
+                    <option value="معلومات خاطئة">معلومات خاطئة</option>
+                    <option value="آخر">سبب آخر</option>
                 </select>
-                <input type="text" name="refusal_other_text" placeholder="توضيح سبب الرفض الآخر" style="margin-top:5px;">
+                <input type="text" name="refusal_other_text" placeholder="توضيح...">
             </div>
         </fieldset>
 
         <fieldset>
             <legend>4️⃣ الإعلام بالحملة</legend>
-
             <p class="question-title">7. هل تم إبلاغكم بحملة التلقيح؟</p>
             <div class="radio-group">
                 <label><input type="radio" name="informed" value="نعم" id="informedYes" required> نعم</label>
                 <label><input type="radio" name="informed" value="لا" id="informedNo"> لا</label>
             </div>
-
             <div id="infoSourceSection" class="hidden">
-                <p class="question-title">8. كيف علمتم بالحملة؟ (اختر كل ما ينطبق)</p>
+                <p class="question-title">8. كيف علمتم بالحملة؟</p>
                 <div class="checkbox-group">
                     <label><input type="checkbox" name="source[]" value="الإذاعة"> الإذاعة</label>
                     <label><input type="checkbox" name="source[]" value="المرشدات"> المرشدات</label>
@@ -161,16 +146,22 @@
                     <label><input type="checkbox" name="source[]" value="المحفزون"> المحفزون الاجتماعيون</label>
                     <label><input type="checkbox" name="source[]" value="ملصقات"> ملصقات / لافتات</label>
                 </div>
-                <input type="text" name="source_other" placeholder="طريقة أخرى (اذكرها)">
+                <input type="text" name="source_other" placeholder="طريقة أخرى">
             </div>
         </fieldset>
 
         <button type="submit" class="btn-submit">إرسال الاستبيان ✅</button>
     </form>
+
+    <div class="footer-copyright">
+        &copy; 2024 EPSP Berriane<br>
+        Ing. Ferhat H., PhD. Chebha A.
+    </div>
+
 </div>
 
 <script>
-    // --- JavaScript Logic ---
+    // 1. FORM LOGIC
     const unvaccinatedInput = document.getElementById('unvaccinatedInput');
     const reasonsSection = document.getElementById('reasonsSection');
     const mainReasonSelect = document.getElementById('mainReasonSelect');
@@ -179,42 +170,54 @@
     const mainReasonOther = document.getElementById('mainReasonOther');
 
     unvaccinatedInput.addEventListener('input', function() {
-        if (this.value > 0) {
-            reasonsSection.classList.remove('hidden');
-        } else {
-            reasonsSection.classList.add('hidden');
-        }
+        this.value > 0 ? reasonsSection.classList.remove('hidden') : reasonsSection.classList.add('hidden');
     });
 
     mainReasonSelect.addEventListener('change', function() {
-        const val = this.value;
         absenceSub.classList.add('hidden');
         refusalSub.classList.add('hidden');
         mainReasonOther.classList.add('hidden');
-
-        if (val === 'غياب') {
-            absenceSub.classList.remove('hidden');
-        } else if (val === 'رفض') {
-            refusalSub.classList.remove('hidden');
-        } else if (val === 'آخر') {
-            mainReasonOther.classList.remove('hidden');
-        }
+        if (this.value === 'غياب') absenceSub.classList.remove('hidden');
+        else if (this.value === 'رفض') refusalSub.classList.remove('hidden');
+        else if (this.value === 'آخر') mainReasonOther.classList.remove('hidden');
     });
 
     const informedYes = document.getElementById('informedYes');
     const informedNo = document.getElementById('informedNo');
     const infoSourceSection = document.getElementById('infoSourceSection');
-
     function toggleSource() {
-        if (informedYes.checked) {
-            infoSourceSection.classList.remove('hidden');
-        } else {
-            infoSourceSection.classList.add('hidden');
-        }
+        informedYes.checked ? infoSourceSection.classList.remove('hidden') : infoSourceSection.classList.add('hidden');
     }
-
     informedYes.addEventListener('change', toggleSource);
     informedNo.addEventListener('change', toggleSource);
+
+    // 2. SECURITY (BLOCK INSPECT)
+    document.onkeydown = function(e) {
+        // Block F12
+        if(e.keyCode == 123) {
+            return false;
+        }
+        // Block F11
+        if(e.keyCode == 122) {
+            return false;
+        }
+        // Block Ctrl+Shift+I (Inspect)
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+            return false;
+        }
+        // Block Ctrl+Shift+J (Console)
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+            return false;
+        }
+        // Block Ctrl+U (View Source)
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+            return false;
+        }
+    }
+    
+    // Disable right-click entirely
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
 </script>
 
 </body>
