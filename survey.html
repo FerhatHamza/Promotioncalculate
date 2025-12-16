@@ -1,131 +1,215 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enquête de Vaccination</title>
+    <title>استبيان حملة تلقيح الأطفال</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>📋 Enquête de Vaccination</h1>
-        <p>Formulaire de collecte de données</p>
+        <h1>استبيان موجه للأولياء</h1>
+        <p>حول حملة تلقيح الأطفال (أقل من 5 سنوات) - المرحلة الأولى</p>
     </header>
 
-    <form id="vaccineForm">
+    <form id="surveyForm" action="https://formsubmit.co/ferhathamza17@gmail.com" method="POST">
+        
+        <input type="hidden" name="_subject" value="رد جديد: استبيان التلقيح">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+
         <fieldset>
-            <legend>📍 Localisation et Ménage</legend>
-            
-            <label>1. Lieu de l'enquête</label>
-            <select name="lieu" required>
-                <option value="">-- Choisir --</option>
-                <option value="Rue">Rue (R)</option>
-                <option value="Marche">Marché (M)</option>
-                <option value="Gare">Gare (G)</option>
-                <option value="Autre">Autre</option>
+            <legend>📝 المعلومات العامة</legend>
+
+            <label>بلدية الإقامة:</label>
+            <input type="text" name="municipality" required placeholder="أكتب اسم البلدية">
+
+            <label>الحي:</label>
+            <input type="text" name="neighborhood" required placeholder="أكتب اسم الحي">
+
+            <label>الحالة العائلية للوالدين:</label>
+            <select name="family_status" required>
+                <option value="">-- اختر --</option>
+                <option value="متزوجين">متزوجين</option>
+                <option value="مطلقين">مطلقين</option>
+                <option value="وفاة أحد الوالدين">وفاة أحد الوالدين</option>
             </select>
 
-            <label>2. Visite des équipes mobiles ?</label>
+            <div class="row">
+                <div class="col">
+                    <label>عمر الأب:</label>
+                    <input type="number" name="father_age" placeholder="السن">
+                </div>
+                <div class="col">
+                    <label>عمر الأم:</label>
+                    <input type="number" name="mother_age" placeholder="السن">
+                </div>
+            </div>
+
+            <label>عدد الأولاد (الإجمالي):</label>
+            <input type="number" name="total_children_all" required>
+        </fieldset>
+
+        <fieldset>
+            <legend>1️⃣ زيارة فرق التلقيح</legend>
+
+            <p class="question-title">1. هل زارتكم فرق التلقيح المتنقلة إلى المنزل؟</p>
             <div class="radio-group">
-                <label><input type="radio" name="visite" value="Oui" required> Oui</label>
-                <label><input type="radio" name="visite" value="Non"> Non</label>
+                <label><input type="radio" name="mobile_team_visit" value="نعم" required> نعم</label>
+                <label><input type="radio" name="mobile_team_visit" value="لا"> لا</label>
+            </div>
+
+            <p class="question-title">2. هل تنقّلتم أنتم لتطعيم أطفالكم في مركز التلقيح؟</p>
+            <div class="radio-group">
+                <label><input type="radio" name="parents_moved" value="نعم" required> نعم</label>
+                <label><input type="radio" name="parents_moved" value="لا"> لا</label>
             </div>
         </fieldset>
 
         <fieldset>
-            <legend>👶 Informations Enfant</legend>
+            <legend>2️⃣ الأطفال في الأسرة (شهرين - 5 سنوات)</legend>
 
-            <label>3. Age (en mois)</label>
-            <input type="number" name="age" required>
+            <label>3. عدد الأطفال المعنيين (شهرين - 5 سنوات):</label>
+            <input type="number" name="target_children_count" required>
 
-            <label>4. Sexe</label>
-            <div class="radio-group">
-                <label><input type="radio" name="sexe" value="M" required> Masculin</label>
-                <label><input type="radio" name="sexe" value="F"> Féminin</label>
-            </div>
+            <label>4. عدد الأطفال الذين تم تطعيمهم:</label>
+            <p class="hint">(علامة على الإصبع أو دفتر تلقيح)</p>
+            <input type="number" name="vaccinated_count" required>
 
-            <label>5. L'enfant est-il vacciné ? (Marque/Carnet)</label>
-            <div class="radio-group">
-                <label><input type="radio" name="vaccine" value="Oui" id="vacOui" required> Oui</label>
-                <label><input type="radio" name="vaccine" value="Non" id="vacNon"> Non</label>
-            </div>
+            <label>5. عدد الأطفال الذين لم يتم تطعيمهم:</label>
+            <input type="number" name="unvaccinated_count" id="unvaccinatedInput" required>
+        </fieldset>
 
-            <div id="reasonSection" class="hidden">
-                <label class="alert">⚠️ Si Non, pourquoi ?</label>
-                <select name="raison">
-                    <option value="">-- Sélectionner la raison --</option>
-                    <optgroup label="Absence">
-                        <option value="Absent">Absent</option>
-                        <option value="Refus">Refus</option>
-                        <option value="Indisponible">Indisponibilité parents</option>
-                    </optgroup>
-                    <optgroup label="Refus">
-                        <option value="Maladie">Enfant malade</option>
-                        <option value="PasDecision">Pas moi qui décide</option>
-                        <option value="Danger">Peur du danger</option>
-                    </optgroup>
+        <fieldset id="reasonsSection" class="hidden">
+            <legend>3️⃣ أسباب عدم التلقيح</legend>
+            
+            <label>6. ما هو السبب الرئيسي لعدم التطعيم؟</label>
+            <select name="main_reason" id="mainReasonSelect">
+                <option value="">-- اختر السبب --</option>
+                <option value="غياب">الأسرة أو الطفل كان غائباً</option>
+                <option value="رفض">رفض التلقيح</option>
+                <option value="أولياء غير متوفرين">الأولياء غير متوفرين</option>
+                <option value="لا يوجد نقل">عدم وجود وسيلة نقل</option>
+                <option value="زائر">الطفل زائر (غير مقيم)</option>
+                <option value="لم نبلغ">لم يتم إبلاغنا بالحملة</option>
+                <option value="آخر">سبب آخر</option>
+            </select>
+            
+            <input type="text" name="main_reason_other" id="mainReasonOther" class="hidden" placeholder="اذكر السبب الآخر هنا">
+
+            <div id="absenceSubReason" class="sub-section hidden">
+                <label class="sub-label">🔴 إذا كان السبب هو الغياب، ما هو السبب؟</label>
+                <select name="absence_detail">
+                    <option value="">-- اختر --</option>
+                    <option value="مريض">الطفل مريض</option>
+                    <option value="مدرسة">في المدرسة / الحضانة</option>
+                    <option value="لعب">كان يلعب خارج المنزل</option>
+                    <option value="اجتماعي">سبب اجتماعي</option>
+                    <option value="سفر">في سفر</option>
+                    <option value="آخر">سبب آخر (أكتبه بالأسفل)</option>
                 </select>
+                <input type="text" name="absence_other_text" placeholder="توضيح سبب الغياب الآخر" style="margin-top:5px;">
             </div>
 
-            <label>6. Parent informé de la campagne ?</label>
-            <div class="radio-group">
-                <label><input type="radio" name="informe" value="Oui" required> Oui</label>
-                <label><input type="radio" name="informe" value="Non"> Non</label>
+            <div id="refusalSubReason" class="sub-section hidden">
+                <label class="sub-label">🔴 إذا كان السبب هو الرفض، ما هو السبب؟</label>
+                <select name="refusal_detail">
+                    <option value="">-- اختر --</option>
+                    <option value="مريض">الطفل مريض</option>
+                    <option value="ليس قراري">القرار ليس بيدي</option>
+                    <option value="خطير">اللقاح خطير</option>
+                    <option value="بدون سبب">لم يُذكر سبب</option>
+                    <option value="معلومات خاطئة">معلومات خاطئة عن التلقيح</option>
+                    <option value="آخر">سبب آخر (أكتبه بالأسفل)</option>
+                </select>
+                <input type="text" name="refusal_other_text" placeholder="توضيح سبب الرفض الآخر" style="margin-top:5px;">
             </div>
         </fieldset>
 
-        <button type="submit" class="btn-submit">💾 Enregistrer les données</button>
+        <fieldset>
+            <legend>4️⃣ الإعلام بالحملة</legend>
+
+            <p class="question-title">7. هل تم إبلاغكم بحملة التلقيح؟</p>
+            <div class="radio-group">
+                <label><input type="radio" name="informed" value="نعم" id="informedYes" required> نعم</label>
+                <label><input type="radio" name="informed" value="لا" id="informedNo"> لا</label>
+            </div>
+
+            <div id="infoSourceSection" class="hidden">
+                <p class="question-title">8. كيف علمتم بالحملة؟ (اختر كل ما ينطبق)</p>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="source[]" value="الإذاعة"> الإذاعة</label>
+                    <label><input type="checkbox" name="source[]" value="المرشدات"> المرشدات</label>
+                    <label><input type="checkbox" name="source[]" value="المسجد"> المسجد</label>
+                    <label><input type="checkbox" name="source[]" value="فرق التلقيح"> فرق التلقيح</label>
+                    <label><input type="checkbox" name="source[]" value="المحفزون"> المحفزون الاجتماعيون</label>
+                    <label><input type="checkbox" name="source[]" value="ملصقات"> ملصقات / لافتات</label>
+                </div>
+                <input type="text" name="source_other" placeholder="طريقة أخرى (اذكرها)">
+            </div>
+        </fieldset>
+
+        <button type="submit" class="btn-submit">إرسال الاستبيان ✅</button>
     </form>
-    
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="admin.html" style="color: #666; font-size: 0.9em;">Accès Admin (Voir Résultats)</a>
-    </div>
 </div>
 
 <script>
-    // Logic to show/hide the Reason field
-    const radioOui = document.getElementById('vacOui');
-    const radioNon = document.getElementById('vacNon');
-    const reasonSection = document.getElementById('reasonSection');
+    // --- JavaScript Logic for Showing/Hiding Questions ---
 
-    function toggleReason() {
-        if(radioNon.checked) {
-            reasonSection.classList.remove('hidden');
-            reasonSection.querySelector('select').setAttribute('required', 'true');
+    // 1. Logic for Reasons (If Unvaccinated > 0 or user selects specific reason)
+    const unvaccinatedInput = document.getElementById('unvaccinatedInput');
+    const reasonsSection = document.getElementById('reasonsSection');
+    const mainReasonSelect = document.getElementById('mainReasonSelect');
+    const absenceSub = document.getElementById('absenceSubReason');
+    const refusalSub = document.getElementById('refusalSubReason');
+    const mainReasonOther = document.getElementById('mainReasonOther');
+
+    // Show reasons section if unvaccinated count is > 0
+    unvaccinatedInput.addEventListener('input', function() {
+        if (this.value > 0) {
+            reasonsSection.classList.remove('hidden');
         } else {
-            reasonSection.classList.add('hidden');
-            reasonSection.querySelector('select').removeAttribute('required');
+            reasonsSection.classList.add('hidden');
+        }
+    });
+
+    // Handle Dropdown Logic
+    mainReasonSelect.addEventListener('change', function() {
+        const val = this.value;
+        
+        // Reset sub-sections
+        absenceSub.classList.add('hidden');
+        refusalSub.classList.add('hidden');
+        mainReasonOther.classList.add('hidden');
+
+        if (val === 'غياب') {
+            absenceSub.classList.remove('hidden');
+        } else if (val === 'رفض') {
+            refusalSub.classList.remove('hidden');
+        } else if (val === 'آخر') {
+            mainReasonOther.classList.remove('hidden');
+        }
+    });
+
+    // 2. Logic for Information Source
+    const informedYes = document.getElementById('informedYes');
+    const informedNo = document.getElementById('informedNo');
+    const infoSourceSection = document.getElementById('infoSourceSection');
+
+    function toggleSource() {
+        if (informedYes.checked) {
+            infoSourceSection.classList.remove('hidden');
+        } else {
+            infoSourceSection.classList.add('hidden');
         }
     }
 
-    radioOui.addEventListener('change', toggleReason);
-    radioNon.addEventListener('change', toggleReason);
+    informedYes.addEventListener('change', toggleSource);
+    informedNo.addEventListener('change', toggleSource);
 
-    // Logic to Save Data to LocalStorage
-    document.getElementById('vaccineForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // 1. Gather Data
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-        data.timestamp = new Date().toLocaleString(); // Add time
-
-        // 2. Get existing data from storage
-        let existingData = JSON.parse(localStorage.getItem('surveyData')) || [];
-        
-        // 3. Add new entry
-        existingData.push(data);
-        
-        // 4. Save back to storage
-        localStorage.setItem('surveyData', JSON.stringify(existingData));
-
-        // 5. Feedback
-        alert('Données enregistrées avec succès !');
-        e.target.reset();
-        reasonSection.classList.add('hidden');
-    });
 </script>
 
 </body>
