@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>استبيان حملة تلقيح الأطفال</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style6.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -20,6 +20,19 @@
         <input type="hidden" name="_subject" value="رد جديد: استبيان التلقيح">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
+
+        <fieldset style="border-top: 3px solid #3498db;">
+            <legend style="color: #3498db;">👤 معلومات الولي (المجيب)</legend>
+            
+            <label>الاسم الكامل (إجباري):</label>
+            <input type="text" name="fullname" required placeholder="أكتب اسمك الكامل هنا">
+
+            <label>البريد الإلكتروني (إجباري):</label>
+            <input type="email" name="email" required placeholder="example@email.com">
+
+            <label>رقم الهاتف (اختياري):</label>
+            <input type="tel" name="phone" placeholder="0X XX XX XX XX">
+        </fieldset>
 
         <fieldset>
             <legend>📝 المعلومات العامة</legend>
@@ -157,9 +170,7 @@
 </div>
 
 <script>
-    // --- JavaScript Logic for Showing/Hiding Questions ---
-
-    // 1. Logic for Reasons (If Unvaccinated > 0 or user selects specific reason)
+    // --- JavaScript Logic ---
     const unvaccinatedInput = document.getElementById('unvaccinatedInput');
     const reasonsSection = document.getElementById('reasonsSection');
     const mainReasonSelect = document.getElementById('mainReasonSelect');
@@ -167,7 +178,6 @@
     const refusalSub = document.getElementById('refusalSubReason');
     const mainReasonOther = document.getElementById('mainReasonOther');
 
-    // Show reasons section if unvaccinated count is > 0
     unvaccinatedInput.addEventListener('input', function() {
         if (this.value > 0) {
             reasonsSection.classList.remove('hidden');
@@ -176,11 +186,8 @@
         }
     });
 
-    // Handle Dropdown Logic
     mainReasonSelect.addEventListener('change', function() {
         const val = this.value;
-        
-        // Reset sub-sections
         absenceSub.classList.add('hidden');
         refusalSub.classList.add('hidden');
         mainReasonOther.classList.add('hidden');
@@ -194,7 +201,6 @@
         }
     });
 
-    // 2. Logic for Information Source
     const informedYes = document.getElementById('informedYes');
     const informedNo = document.getElementById('informedNo');
     const infoSourceSection = document.getElementById('infoSourceSection');
@@ -209,7 +215,6 @@
 
     informedYes.addEventListener('change', toggleSource);
     informedNo.addEventListener('change', toggleSource);
-
 </script>
 
 </body>
