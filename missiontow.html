@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب مصاريف المهمات (2024) - الجزائر</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Fix for date inputs on mobile */
+        input[type="datetime-local"] {
+            direction: ltr;
+            text-align: right;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-tajawal">
+
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        <header class="mb-8 text-center bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-teal-400"></div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">حساب مصاريف المهمات</h1>
+            <p class="text-gray-500 text-lg">طبقا للمرسوم التنفيذي رقم 24-79 المؤرخ في 8 فبراير 2024</p>
+            <span class="inline-block mt-3 px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">نسخة محدثة 2024</span>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-8 space-y-6">
+                
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-4 border-b pb-3 border-gray-100">
+                        <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">1. تصنيف العون والمنطقة</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">اختر المنطقة والتصنيف</label>
+                            <select id="employeeCategory" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                <optgroup label="شمال البلاد (Zone Nord)">
+                                    <option value="north_1_10">شمال: الصنف 01 إلى 10</option>
+                                    <option value="north_11_plus">شمال: الصنف 11 فما فوق</option>
+                                </optgroup>
+                                <optgroup label="جنوب البلاد (Zone Sud)">
+                                    <option value="south_all">جنوب: جميع الأصناف (1 فما فوق)</option>
+                                </optgroup>
+                                <optgroup label="الوظائف العليا (Fonctions Supérieures)">
+                                    <option value="high_function">الوظائف العليا للدولة (شمال أو جنوب)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-4 border-b pb-3 border-gray-100">
+                        <div class="bg-purple-100 p-2 rounded-lg text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">2. مدة المهمة</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">تاريخ وتوقيت الانطلاق</label>
+                            <input type="datetime-local" id="startDate" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">تاريخ وتوقيت العودة</label>
+                            <input type="datetime-local" id="endDate" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-4 border-b pb-3 border-gray-100">
+                        <div class="bg-orange-100 p-2 rounded-lg text-orange-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">3. النقل (المادة 5)</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">وسيلة النقل</label>
+                            <select id="transportType" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                                <option value="none">بدون تعويض (نقل عمومي/سيارة خدمة)</option>
+                                <option value="personal_car">سيارة شخصية (8 دج/كلم)</option>
+                                <option value="other_moto">دراجة نارية (3 دج/كلم)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">المسافة (كم) - ذهاب وإياب</label>
+                            <input type="number" id="distance" value="0" min="0" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4">حالات خاصة (المادة 9)</h2>
+                    <div class="space-y-4">
+                        <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer transition">
+                            <input type="checkbox" id="adminHosted" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                            <span class="text-gray-700 font-medium">الإيواء والإطعام تم من طرف الإدارة (تخفيض إلى 25%)</span>
+                        </label>
+                    </div>
+                </section>
+
+                <button onclick="calculateExpenses()" class="w-full bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition duration-300 text-xl transform hover:-translate-y-1">
+                    احسب التعويضات 🧮
+                </button>
+            </div>
+
+            <div class="lg:col-span-4">
+                <div class="sticky top-6 space-y-6">
+                    
+                    <div class="bg-gray-900 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
+                        <div class="absolute -right-6 -top-6 w-24 h-24 bg-white opacity-10 rounded-full blur-xl"></div>
+                        <h3 class="text-gray-400 text-sm font-medium mb-1">المبلغ الإجمالي المستحق</h3>
+                        <div class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300" id="grandTotal">0.00 دج</div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-gray-800 mb-5 border-b pb-2">تفاصيل الحساب</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm group">
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span>وجبات الغداء (11h-14h):</span>
+                                </div>
+                                <span class="font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-800" id="lunchCount">0</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center text-sm group">
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span>وجبات العشاء (18h-21h):</span>
+                                </div>
+                                <span class="font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-800" id="dinnerCount">0</span>
+                            </div>
+
+                            <div class="flex justify-between items-center text-sm group">
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                                    <span>عدد الليالي (00h-06h):</span>
+                                </div>
+                                <span class="font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-800" id="nightCount">0</span>
+                            </div>
+
+                            <hr class="border-dashed border-gray-200 my-4">
+
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-blue-700 text-sm">
+                                    <span>مجموع الإطعام:</span>
+                                    <span class="font-bold" id="totalFood">0.00 دج</span>
+                                </div>
+                                <div class="flex justify-between text-purple-700 text-sm">
+                                    <span>مجموع المبيت:</span>
+                                    <span class="font-bold" id="totalLodging">0.00 دج</span>
+                                </div>
+                                <div class="flex justify-between text-orange-700 text-sm">
+                                    <span>تعويض النقل:</span>
+                                    <span class="font-bold" id="totalTransport">0.00 دج</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <footer class="mt-12 text-center text-gray-400 text-sm py-6 border-t border-gray-200">
+            <p>&copy; 2024 - تطبيق حساب مصاريف المهمات (الجزائر)</p>
+            <p class="mt-1 text-xs">تم التحديث وفق الجريدة الرسمية رقم 11 (14 فبراير 2024)</p>
+        </footer>
+    </div>
+
+    <script>
+        /**
+         * CONFIGURATION PARAMETERS (Decree 24-79 / Feb 2024)
+         */
+        const CONFIG = {
+            rates: {
+                north_1_10:     { meal: 600, lodging: 2400 }, // Cat 1-10
+                north_11_plus:  { meal: 800, lodging: 3200 }, // Cat 11+
+                south_all:      { meal: 1000, lodging: 4000 }, // Cat 1+
+                high_function:  { meal: 1600, lodging: 6400 }
+            },
+            transport: {
+                personal_car: 8.0,  
+                other_moto: 3.0,    
+                none: 0
+            },
+            reductions: {
+                hosted: 0.25,  
+                full: 1.0      
+            }
+        };
+
+        function calculateExpenses() {
+            try {
+                // 1. Get Inputs
+                const category = document.getElementById('employeeCategory').value;
+                const startVal = document.getElementById('startDate').value;
+                const endVal = document.getElementById('endDate').value;
+                const distance = parseFloat(document.getElementById('distance').value) || 0;
+                const transportType = document.getElementById('transportType').value;
+                const isAdminHosted = document.getElementById('adminHosted').checked;
+
+                // 2. Validate
+                if (!startVal || !endVal) {
+                    alert("يرجى إدخال تاريخ الانطلاق وتاريخ العودة");
+                    return;
+                }
+                const startDate = new Date(startVal);
+                const endDate = new Date(endVal);
+
+                if (endDate <= startDate) {
+                    alert("خطأ: تاريخ العودة يجب أن يكون بعد تاريخ الانطلاق!");
+                    return;
+                }
+
+                // 3. Count
+                const counts = countOccurrences(startDate, endDate);
+
+                // 4. Calculate
+                const rateData = CONFIG.rates[category];
+                const coefficient = isAdminHosted ? CONFIG.reductions.hosted : CONFIG.reductions.full;
+
+                const mealCost = rateData.meal * coefficient;
+                const lodgingCost = rateData.lodging * coefficient;
+
+                const totalFood = (counts.lunches + counts.dinners) * mealCost;
+                const totalLodging = counts.nights * lodgingCost;
+
+                let totalTransport = 0;
+                if (transportType !== 'none') {
+                    totalTransport = distance * CONFIG.transport[transportType];
+                }
+
+                const grandTotal = totalFood + totalLodging + totalTransport;
+
+                // 5. Update UI
+                updateUI(counts, totalFood, totalLodging, totalTransport, grandTotal);
+                
+                // Success feedback
+                console.log("Calculation successful:", grandTotal);
+
+            } catch (e) {
+                console.error(e);
+                alert("حدث خطأ أثناء الحساب. يرجى التأكد من إدخال البيانات بشكل صحيح.");
+            }
+        }
+
+        function countOccurrences(start, end) {
+            let lunches = 0;
+            let dinners = 0;
+            let nights = 0;
+
+            let ptr = new Date(start);
+            
+            // Loop day by day
+            while(ptr < end) {
+                // Check Lunch (12:00)
+                let lunchTime = new Date(ptr); lunchTime.setHours(12,0,0,0);
+                if (ptr <= lunchTime && end > lunchTime) lunches++;
+
+                // Check Dinner (19:00)
+                let dinnerTime = new Date(ptr); dinnerTime.setHours(19,0,0,0);
+                if (ptr <= dinnerTime && end > dinnerTime) dinners++;
+
+                // Check Night (00:00 of Next Day)
+                let nightTime = new Date(ptr); 
+                nightTime.setDate(nightTime.getDate() + 1);
+                nightTime.setHours(0,0,0,0);
+                
+                if (ptr <= nightTime && end > nightTime) nights++;
+
+                // Move to next day
+                ptr.setDate(ptr.getDate() + 1);
+                ptr.setHours(0,1,0,0);
+            }
+
+            return { lunches, dinners, nights };
+        }
+
+        function updateUI(counts, food, lodging, transport, total) {
+            document.getElementById('lunchCount').innerText = counts.lunches;
+            document.getElementById('dinnerCount').innerText = counts.dinners;
+            document.getElementById('nightCount').innerText = counts.nights;
+
+            const fmt = (n) => n.toLocaleString('fr-DZ', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' دج';
+            
+            document.getElementById('totalFood').innerText = fmt(food);
+            document.getElementById('totalLodging').innerText = fmt(lodging);
+            document.getElementById('totalTransport').innerText = fmt(transport);
+            document.getElementById('grandTotal').innerText = fmt(total);
+        }
+
+        // Initialize Dates on Load
+        window.onload = function() {
+            const now = new Date();
+            const start = new Date(now); start.setHours(8,0,0,0);
+            const end = new Date(now); end.setDate(end.getDate()+1); end.setHours(16,0,0,0);
+            
+            const toLocalISO = (d) => {
+                const offset = d.getTimezoneOffset() * 60000;
+                return new Date(d.getTime() - offset).toISOString().slice(0, 16);
+            };
+
+            document.getElementById('startDate').value = toLocalISO(start);
+            document.getElementById('endDate').value = toLocalISO(end);
+        };
+    </script>
+</body>
+</html>
